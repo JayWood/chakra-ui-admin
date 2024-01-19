@@ -1,4 +1,4 @@
-import { NextRequest } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { redirect, useSearchParams } from 'next/navigation'
 import {
     getEveUrl,
@@ -6,6 +6,8 @@ import {
     updateUser,
     validateToken,
 } from '../../../../lib/eve-auth'
+import { getIronSession } from 'iron-session'
+import { cookies } from 'next/headers'
 
 type queryParams = {
     params: {
@@ -19,8 +21,8 @@ const defaultApiHeaders = {
     'Cache-Control': 'no-store, no-cache, must-revalidate, max-age=0',
 }
 
-export async function GET(req: NextRequest, { params }: queryParams) {
-    if (0 > ['login', 'callback'].indexOf(params.type)) {
+export async function GET(req: NextRequest, res: NextResponse) {
+    if (0 > ['login', 'callback'].indexOf(res.params.type)) {
         return new Response(
             JSON.stringify({
                 error: 'Not Found',
@@ -36,7 +38,7 @@ export async function GET(req: NextRequest, { params }: queryParams) {
         )
     }
 
-    if (params.type == 'login') {
+    if (res.params.type == 'login') {
         redirect(getEveUrl('http://localhost:3000/api/auth/callback'))
     }
 
@@ -60,20 +62,24 @@ export async function GET(req: NextRequest, { params }: queryParams) {
     const responseData = result.data
     const decodedToken = await validateToken(responseData)
 
+    const session = await getIronSession(req, res, {
+        password: process.env.SECURE_SALT,
+        cookieName: 'csrfToken',
+        cookieOptions: {
+            secure: process.env.NODE_ENV === 'production',
+        },
+    })
+
+    session.username = decodedToken.name
+    session.token = responseData.access_token
+
+    await session.save()
+
     await updateUser(
         decodedToken,
         responseData.access_token,
         responseData.refresh_token
     )
 
-    return new Response('', {
-        status: 303,
-        headers: {
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Methods': 'GET',
-            Location: '/dashboard',
-            'Set-Cookie': `token=${responseData.access_token}; HttpOnly; Path=/; Secure; SameSite=Strict`,
-            ...defaultApiHeaders,
-        },
-    })
+    return NextResponse.redirect(new URL('/dashboard', req.url))
 }
