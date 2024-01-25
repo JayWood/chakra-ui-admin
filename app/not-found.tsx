@@ -1,6 +1,6 @@
 const NotFound = () => (
     <>
-        <p>Oops looks like that wasn't found, sorry.</p>
+        <p>Oops looks like that was not found, sorry.</p>
     </>
 )
 

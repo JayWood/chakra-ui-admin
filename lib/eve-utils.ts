@@ -1,5 +1,3 @@
-import { string } from 'prop-types'
-
 export const imageBase: string = 'https://images.evetech.net'
 
 type ImageOptions = {

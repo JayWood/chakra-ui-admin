@@ -7,7 +7,7 @@ import {
     Text,
     VStack,
     Image,
-    useColorModeValue,
+    useColorModeValue, Button,
 } from '@chakra-ui/react'
 import ThemeToggle from '../components/ThemeToggle'
 
@@ -44,15 +44,16 @@ const Page = () => (
                 <Heading as="h1" fontSize="3xl" textAlign="center">
                     Sign in to Eve Market
                 </Heading>
-                <VStack spacing="4" as="form">
-                    <Link href="/api/auth/login">
+                <VStack spacing="4" as="form" method="post" action="/api/auth/login">
+                    <Button as="submit">
                         <Image
                             src={useColorModeValue(
                                 'eve/eve-sso-login-black-large.png',
                                 'eve/eve-sso-login-white-large.png'
                             )}
+                            alt="Image of EveOnline"
                         />
-                    </Link>
+                    </Button>
                     <ThemeToggle />
                 </VStack>
                 <Text mt="3" fontSize="xs" textAlign="center" as="em">

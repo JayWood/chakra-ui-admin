@@ -1,25 +1,27 @@
-import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
-import { cookies } from 'next/headers'
-import { getIronSession } from 'iron-session'
+import csrf from 'edge-csrf';
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
+
+// initalize protection function
+const csrfProtect = csrf({
+    cookie: {
+        secure: process.env.NODE_ENV === 'production',
+    },
+});
 
 export async function middleware(request: NextRequest) {
-    const res = NextResponse.next()
-    const session = await getIronSession(request, res, {
-        password: process.env.SECURE_SALT,
-        cookieName: 'csrfToken',
-        cookieOptions: {
-            secure: process.env.NODE_ENV === 'production',
-        },
-    })
+    const response = NextResponse.next();
 
-    console.log(session.username)
+    // csrf protection
+    const csrfError = await csrfProtect(request, response);
 
-    // if (!session?.username) {
-    //     return NextResponse.redirect(new URL('/', request.url))
-    // }
-}
+    // check result
+    if (csrfError) {
+        request.nextUrl.searchParams.set('from', request.nextUrl.pathname)
+        request.nextUrl.pathname = '/unauthorized'
 
-export const config = {
-    matcher: '/dashboard/:path*',
+        return NextResponse.redirect(request.nextUrl)
+    }
+
+    return response;
 }
