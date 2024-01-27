@@ -1,12 +1,8 @@
 /**
  * EveOnline authentication flow.
  */
-require('dotenv').config()
 import axios from 'axios'
-import jwt from 'jsonwebtoken'
-import jwksClient from 'jwks-rsa'
-import { createDocument, readDocument, updateDocument } from './mongodb'
-import { WithId } from 'mongodb'
+import * as jose from 'jose'
 
 const CLIENT_ID: string = process?.env?.EVE_CLIENT_ID || ''
 const CLIENT_SECRET: string = process?.env?.EVE_CLIENT_SECRET || ''
@@ -17,14 +13,14 @@ const TOKEN_URL = OAUTH_URL + 'token/'
 
 export const COLLECTION_USERS = 'eveUsers'
 
-interface CodeResponse {
+export type CodeResponse = {
     access_token: string
     expires_in: number
     token_type: string
     refresh_token: string
 }
 
-interface UserRecord {
+export type UserRecord = {
     access_token: string
     expiration: number
     name: string
@@ -32,7 +28,7 @@ interface UserRecord {
     refresh_token: string
 }
 
-interface EvePayload {
+export type EvePayload = {
     scp: string[]
     jti: string
     kid: string
@@ -123,58 +119,10 @@ export const refreshToken = async (refresh_token: string) => {
     })
 
     const validToken = validateToken(data)
-
-    await updateUser(validToken, data.access_token, refresh_token)
+    //
+    // await updateUser(validToken, data.access_token, refresh_token)
 
     return data.access_token
-}
-
-/**
- * Gets the EvE Online Access token for a user if one is on file.
- * @param userID
- */
-export const getUserToken = async (userID: number) => {
-    const userRecord = await readDocument(
-        { playerId: userID },
-        COLLECTION_USERS
-    )
-
-    if (!userRecord) {
-        throw new Error('Error for user.')
-    }
-
-    const { access_token, expiration, refresh_token } =
-        userRecord as WithId<UserRecord>
-
-    if (expiration < Math.floor(Date.now() / 1000)) {
-        return await refreshToken(refresh_token)
-    }
-
-    return access_token
-}
-
-export const updateUser = async (
-    decoded: EvePayload,
-    access_token: string,
-    refresh_token: string
-) => {
-    const sub = decoded.sub.split(':')
-    const playerId = parseInt(sub[sub.length - 1])
-
-    // Now write the document.
-    const document = {
-        access_token,
-        refresh_token,
-        expiration: decoded.exp as number,
-        name: decoded.name,
-        playerId: playerId,
-    }
-
-    return await updateDocument(
-        { playerId: playerId },
-        COLLECTION_USERS,
-        document
-    )
 }
 
 /**
@@ -186,16 +134,25 @@ export const validateToken = async (
     response: CodeResponse
 ): Promise<EvePayload> => {
     const { access_token } = response
-    const client = jwksClient({
-        jwksUri: 'https://login.eveonline.com/oauth/jwks',
-    })
+    return await validateAccessToken(access_token)
+}
 
-    const key = await client.getSigningKey('JWT-Signature-Key')
-    const signingKey = key.getPublicKey()
+export const validateAccessToken = async (
+    access_token: string
+): Promise<EvePayload> => {
+    const client = jose.createRemoteJWKSet(
+        new URL('https://login.eveonline.com/oauth/jwks')
+    )
 
-    return <EvePayload>jwt.verify(access_token, signingKey, {
-        audience: 'EVE Online',
-        issuer: ['https://login.eveonline.com', 'login.eveonline.com'],
-        ignoreExpiration: true,
-    })
+    const { payload, protectedHeader } = await jose
+        .jwtVerify(access_token, client, {
+            audience: 'EVE Online',
+            issuer: ['https://login.eveonline.com', 'login.eveonline.com'],
+            ignoreExpiration: true,
+        })
+        .catch((error) => {
+            throw error
+        })
+
+    return payload as EvePayload
 }
