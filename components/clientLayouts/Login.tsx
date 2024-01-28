@@ -11,8 +11,18 @@ import {
     VStack,
 } from '@chakra-ui/react'
 import ThemeToggle from '@/components/ThemeToggle'
+import { useEffect } from 'react'
+import { useRouter } from 'next/router'
 
-const Login = ({ csrfToken }: { csrfToken: string }) => {
+const Login = ({
+    csrfToken,
+    hasLogin = false,
+}: {
+    csrfToken: string
+    hasLogin: boolean
+}) => {
+    console.log(hasLogin)
+
     return (
         <Flex
             minH="100vh"

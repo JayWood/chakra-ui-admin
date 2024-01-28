@@ -32,7 +32,6 @@ export async function middleware(request: NextRequest) {
         })
 
         if (!validToken) {
-            console.log('token invalid')
             request.nextUrl.pathname = '/'
             const r = NextResponse.redirect(request.nextUrl)
             r.cookies.delete('token')
@@ -41,13 +40,10 @@ export async function middleware(request: NextRequest) {
     }
 
     if (token && '/' === path) {
-        console.log('wtf')
         return NextResponse.redirect(new URL('/dashboard', request.nextUrl))
     }
 
     if (path.startsWith('/dashboard')) {
-        const x = request.cookies.get('token')
-        console.log(x)
         if (!token) {
             console.log('no token wtf')
             request.nextUrl.pathname = '/'
