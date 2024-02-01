@@ -4,13 +4,7 @@ import { cookies, headers } from 'next/headers'
 import Login from '@/components/clientLayouts/Login'
 
 const Page = () => {
-    const v = cookies().get('token')?.value
-    return (
-        <Login
-            csrfToken={headers().get('X-CSRF-Token') || 'missing'}
-            hasLogin={!!v}
-        />
-    )
+    return <Login csrfToken={headers().get('X-CSRF-Token') || 'missing'} />
 }
 
 export default Page

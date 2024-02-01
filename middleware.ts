@@ -13,6 +13,8 @@ const csrfProtect = csrf({
 export async function middleware(request: NextRequest) {
     const response = NextResponse.next()
 
+    return response
+
     // csrf protection
     const csrfError = await csrfProtect(request, response)
 

@@ -22,11 +22,16 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
                 minH="100vh"
                 w={isOpen ? 72 : 12}
                 borderRight="2px"
-                borderColor={useColorModeValue('gray.200', 'gray.900')}
+                bg={useColorModeValue(
+                    'aside.background.light',
+                    'aside.background.dark'
+                )}
+                borderColor={useColorModeValue('borders.light', 'borders.dark')}
                 transition="width 0.25s ease"
+                color={useColorModeValue('aside.text.light', 'aside.text.dark')}
             >
                 <HStack h="14" justify="space-between">
-                    {isOpen && <Text p="2.5">Stuffs</Text>}
+                    {isOpen && <Text p="2.5">Dashboard</Text>}
                     <IconButton
                         {...buttonProps}
                         _active="none"
@@ -36,6 +41,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
                         variant="ghost"
                         icon={!isOpen ? <FaBars /> : <FaChevronLeft />}
                         aria-label="open menu"
+                        color={useColorModeValue('icons.light', 'icons.dark')}
                     />
                 </HStack>
                 <Nav isOpen={isOpen} />
@@ -44,9 +50,10 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
                 as="main"
                 w="full"
                 minH="100vh"
-                align="center"
-                justify="center"
-                bg={useColorModeValue('gray.50', 'gray.900')}
+                align="start"
+                padding="1em"
+                direction="column"
+                bg={useColorModeValue('background.light', 'background.dark')}
             >
                 {children}
             </Flex>

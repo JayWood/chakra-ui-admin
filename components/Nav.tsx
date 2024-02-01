@@ -1,16 +1,19 @@
 import { List } from '@chakra-ui/react'
 import NavItem from './NavItem'
 import { FaChartSimple, FaClipboardList, FaClover } from 'react-icons/fa6'
+import navItem from './NavItem'
 
-type ListItem = {
+export type NavListItem = {
     text?: string
     icon: React.ElementType
+    anchor?: string
 }
 
-const listItems: ListItem[] = [
+const listItems: NavListItem[] = [
     {
         text: 'Home',
         icon: FaChartSimple,
+        anchor: 'http://google.com/test',
     },
     {
         text: 'Settings',
@@ -25,11 +28,7 @@ const listItems: ListItem[] = [
 const Nav = ({ isOpen }) => (
     <List spacing={0} p="0.5">
         {listItems.map((item, index) => (
-            <NavItem
-                icon={item.icon}
-                text={isOpen ? item.text : ''}
-                key={index}
-            />
+            <NavItem key={`mainNav-${index}`} item={item} />
         ))}
     </List>
 )
