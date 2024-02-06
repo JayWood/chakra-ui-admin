@@ -1,6 +1,6 @@
 'use server'
 
-import { cookies, headers } from 'next/headers'
+import { headers } from 'next/headers'
 import Login from '@/components/clientLayouts/Login'
 
 const Page = () => {

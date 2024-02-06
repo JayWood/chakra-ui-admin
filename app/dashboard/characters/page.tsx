@@ -1,18 +1,30 @@
 import { Metadata } from 'next'
-import { Box, Flex, Heading, Spacer, Text } from '@chakra-ui/react'
-import React from 'react'
-import { FaMoneyBillAlt } from 'react-icons/fa'
+import {
+    Avatar,
+    Box,
+    Button,
+    Flex,
+    Heading,
+    IconButton,
+    Menu,
+    MenuButton,
+    MenuItem,
+    MenuList,
+    Spacer,
+    Text,
+} from '@chakra-ui/react'
 import MiniStat from '@/components/MiniStat'
+import { FaMoneyBillAlt } from 'react-icons/fa'
+import React from 'react'
 import Header from '@/components/Header'
 
 export const metadata: Metadata = {
-    title: 'Nextjs Testing',
-    description: 'This is a test',
+    title: 'My Characters',
 }
 
 const Page = () => (
     <>
-        <Header title="Dashboard" playerId="1249254900" />
+        <Header title="Characters" playerId="1249254900" />
         <Flex minWidth="100%" alignItems="center" gap="5" flexWrap="wrap">
             <MiniStat
                 icon={<FaMoneyBillAlt />}
@@ -41,4 +53,5 @@ const Page = () => (
         </Flex>
     </>
 )
+
 export default Page

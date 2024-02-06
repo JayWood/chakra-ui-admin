@@ -1,3 +1,5 @@
+import { EvePayload } from '@/lib/eve-auth'
+
 export const imageBase: string = 'https://images.evetech.net'
 
 type ImageOptions = {

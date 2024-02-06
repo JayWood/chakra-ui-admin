@@ -140,12 +140,13 @@ export const validateToken = async (
 export const validateAccessToken = async (
     access_token: string
 ): Promise<EvePayload> => {
-    const client = jose.createRemoteJWKSet(
+    const JWKS = jose.createRemoteJWKSet(
         new URL('https://login.eveonline.com/oauth/jwks')
     )
 
-    const { payload, protectedHeader } = await jose
-        .jwtVerify(access_token, client, {
+    // @ts-ignore
+    const { payload } = await jose
+        .jwtVerify(access_token, JWKS, {
             audience: 'EVE Online',
             issuer: ['https://login.eveonline.com', 'login.eveonline.com'],
             ignoreExpiration: true,

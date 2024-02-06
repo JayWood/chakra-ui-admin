@@ -5,6 +5,7 @@ import {
     Button,
     Flex,
     Heading,
+    IconButton,
     Image,
     Text,
     useColorModeValue,
@@ -57,15 +58,18 @@ const Login = ({ csrfToken }: { csrfToken: string }) => {
                                 value={csrfToken}
                                 name="csrf_token"
                             />
-                            <Button type="submit">
-                                <Image
-                                    src={useColorModeValue(
-                                        'eve/eve-sso-login-black-large.png',
-                                        'eve/eve-sso-login-white-large.png'
-                                    )}
-                                    alt="Image of EveOnline"
-                                />
-                            </Button>
+                            <IconButton
+                                type="submit"
+                                aria-label="Login"
+                                icon={
+                                    <Image
+                                        src={useColorModeValue(
+                                            'eve/eve-sso-login-black-large.png',
+                                            'eve/eve-sso-login-white-large.png'
+                                        )}
+                                    />
+                                }
+                            />
                             <ThemeToggle />
                         </form>
                     </VStack>

@@ -1,6 +1,6 @@
 import { List } from '@chakra-ui/react'
 import NavItem from './NavItem'
-import { FaChartSimple, FaClipboardList, FaClover } from 'react-icons/fa6'
+import { FaChartSimple, FaUsers, FaClover } from 'react-icons/fa6'
 import navItem from './NavItem'
 
 export type NavListItem = {
@@ -11,13 +11,14 @@ export type NavListItem = {
 
 const listItems: NavListItem[] = [
     {
-        text: 'Home',
+        text: 'Dashboard',
         icon: FaChartSimple,
-        anchor: 'http://google.com/test',
+        anchor: '/dashboard',
     },
     {
-        text: 'Settings',
-        icon: FaClipboardList,
+        text: 'Characters',
+        icon: FaUsers,
+        anchor: '/dashboard/characters',
     },
     {
         text: 'Users',

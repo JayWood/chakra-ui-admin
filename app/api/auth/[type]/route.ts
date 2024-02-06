@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { redirect, useSearchParams } from 'next/navigation'
 import { getEveUrl, login, validateToken } from '@/lib/eve-auth'
-import { cookies } from 'next/headers'
 import { updateUser } from '@/lib/db'
+import { NextApiRequest, NextApiResponse } from 'next'
 
 type queryParams = {
     params: {
@@ -16,8 +16,11 @@ const defaultApiHeaders = {
     'Cache-Control': 'no-store, no-cache, must-revalidate, max-age=0',
 }
 
-export async function POST(request: NextRequest, response: NextResponse) {
-    if ('login' !== response.params.type) {
+export async function POST(
+    request: NextRequest,
+    { params }: { params: { type: string } }
+) {
+    if ('login' !== params.type) {
         return new Response(
             JSON.stringify({
                 error: 'Not Found',
@@ -36,8 +39,11 @@ export async function POST(request: NextRequest, response: NextResponse) {
     redirect(getEveUrl('http://localhost:3000/api/auth/callback'))
 }
 
-export async function GET(req: NextRequest, res: NextResponse) {
-    if ('callback' !== res.params.type) {
+export async function GET(
+    req: NextRequest,
+    { params }: { params: { type: string } }
+) {
+    if ('callback' !== params.type) {
         return new Response(
             JSON.stringify({
                 error: 'Not Found',

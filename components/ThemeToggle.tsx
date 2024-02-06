@@ -7,6 +7,7 @@ export default function ThemeToggle() {
     return (
         <IconButton
             alignSelf={'center'}
+            ml={'1em'}
             size={'md'}
             backgroundColor={useColorModeValue('white', 'gray.700')}
             border={'1px'}
