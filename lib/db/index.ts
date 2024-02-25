@@ -6,11 +6,13 @@ import {
 } from '@/lib/eve-auth'
 import { createDocument, readDocument, updateDocument } from './mongodb'
 import { WithId } from 'mongodb'
+import { User } from '@/lib/db/collections'
 
 export const updateUser = async (
     decoded: EvePayload,
     access_token: string,
-    refresh_token: string
+    refresh_token: string,
+    parentPlayerId?: number
 ) => {
     const sub = decoded.sub.split(':')
     const playerId = parseInt(sub[sub.length - 1])
@@ -21,13 +23,14 @@ export const updateUser = async (
         refresh_token,
         expiration: decoded.exp as number,
         name: decoded.name,
-        playerId: playerId,
+        playerId,
+        parentPlayerId,
     }
 
     return await updateDocument(
         { playerId: playerId },
         COLLECTION_USERS,
-        document
+        document as User
     )
 }
 
@@ -45,12 +48,5 @@ export const getUserToken = async (userID: number) => {
         throw new Error('Error for user.')
     }
 
-    const { access_token, expiration, refresh_token } =
-        userRecord as WithId<UserRecord>
-
-    if (expiration < Math.floor(Date.now() / 1000)) {
-        return await refreshToken(refresh_token)
-    }
-
-    return access_token
+    return userRecord as WithId<UserRecord>
 }

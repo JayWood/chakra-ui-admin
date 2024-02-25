@@ -6,6 +6,7 @@ import * as jose from 'jose'
 
 const CLIENT_ID: string = process?.env?.EVE_CLIENT_ID || ''
 const CLIENT_SECRET: string = process?.env?.EVE_CLIENT_SECRET || ''
+const EVE_CALLBACK_URL: string = process?.env?.EVE_CALLBACK_URL || ''
 
 const OAUTH_URL = 'https://login.eveonline.com/v2/oauth/'
 const AUTH_URL = OAUTH_URL + 'authorize/'
@@ -58,16 +59,17 @@ const SCOPES = [
 
 /**
  * Just a helper function to get the Login Url
- * @param redirect
+ * @param scopes
+ * @param state
  */
-export const getEveUrl = (redirect: string): string => {
+export const getEveUrl = (state?: string, scopes?: string[]): string => {
     const url = new URL(AUTH_URL)
     const params: Record<string, string> = {
         response_type: 'code',
-        redirect_uri: redirect,
+        redirect_uri: EVE_CALLBACK_URL,
         client_id: CLIENT_ID,
-        scope: SCOPES.join(' '),
-        state: 'eve-auth',
+        scope: scopes ? scopes.join(' ') : SCOPES.join(' '),
+        state: state ?? 'eve-auth',
     }
 
     for (let paramsKey in params) {
@@ -80,7 +82,7 @@ export const getEveUrl = (redirect: string): string => {
  * Part of the oAuth handshake process.
  * @param authorizationCode
  */
-export const login = (authorizationCode: string) => {
+export const exchangeCode = (authorizationCode: string) => {
     const params = {
         grant_type: 'authorization_code',
         code: authorizationCode,
